@@ -1,0 +1,3 @@
+export const PROVIDE_BOT_SYMBOL = Symbol();
+
+export const BOT_HANDLER_METADATA = 'BOT_HANDLER_METADATA';
