@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { BotModule } from './bot/bot.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ApiModule } from './api/api.module';
+import { VpnModule } from './vpn/vpn.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     BotModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService) => ({
@@ -14,8 +14,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    ApiModule,
+    VpnModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

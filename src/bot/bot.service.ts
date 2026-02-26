@@ -1,8 +1,10 @@
+import { ConfigService } from '@nestjs/config';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { BOT_HANDLER_METADATA, PROVIDE_BOT_SYMBOL } from './bot.constants';
 import { BotHandlerMetadata, BotModuleOptions } from './bot.types';
-import { Bot, FilterQuery } from 'grammy';
+import { Bot, FilterQuery, webhookCallback } from 'grammy';
 import { DiscoveryService } from '@nestjs/core';
+import { isDev } from 'src/util/is-dev.util';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -12,16 +14,47 @@ export class BotService implements OnModuleInit {
 
   constructor(
     private readonly discoveryService: DiscoveryService,
+    private readonly configService: ConfigService,
     @Inject(PROVIDE_BOT_SYMBOL) private readonly options: BotModuleOptions,
-  ) {}
+  ) {
+    this.bot = new Bot(this.options.token);
+    this.logger.log('🤖 Telegram Bot initialized');
+  }
 
   async onModuleInit() {
-    this.bot = new Bot(this.options.token);
-
-    this.logger.log('🤖 Telegram Bot initialized');
     this.setupDecorators();
 
-    this.bot.start();
+    this.bot.api.setMyCommands([
+      {
+        command: 'start',
+        description: 'Запуск бота',
+      },
+      { command: 'menu', description: 'Главное меню' },
+      { command: 'guide', description: 'Инструкция по подключению VPN' },
+    ]);
+
+    this.bot.catch(async (err) => {
+      await err.ctx.answerCallbackQuery();
+      await err.ctx.reply(
+        '⚠️ Произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте снова позже.',
+      );
+    });
+
+    if (isDev(this.configService)) {
+      this.bot.start();
+      this.logger.warn(
+        '⚠️ Running in development mode. Webhook is not set. Bot is using long polling.',
+      );
+    } else {
+      this.logger.log('🚀 Setting up Telegram webhook...');
+      await this.bot.api.setWebhook(
+        this.configService.getOrThrow<string>('TELEGRAM_WEBHOOK_URL'),
+      );
+    }
+  }
+
+  getWebhookHandler() {
+    return webhookCallback(this.bot, 'express');
   }
 
   private async setupDecorators() {
@@ -33,11 +66,15 @@ export class BotService implements OnModuleInit {
       const prototype = Object.getPrototypeOf(instance);
       const methodNames = Object.getOwnPropertyNames(prototype).filter(
         (name) =>
-          typeof instance[name] === 'function' && name !== 'constructor',
+          name !== 'constructor' &&
+          !name.startsWith('__') &&
+          !this.isRestrictedProperty(name),
       );
 
       for (const methodName of methodNames) {
         const method = instance[methodName];
+        if (typeof method !== 'function') continue;
+
         const metadata: BotHandlerMetadata = Reflect.getMetadata(
           BOT_HANDLER_METADATA,
           method,
@@ -84,5 +121,10 @@ export class BotService implements OnModuleInit {
         }
       }
     }
+  }
+
+  private isRestrictedProperty(name: string): boolean {
+    const restrictedProperties = ['caller', 'callee', 'arguments'];
+    return restrictedProperties.includes(name);
   }
 }

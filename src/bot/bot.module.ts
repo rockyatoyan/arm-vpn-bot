@@ -3,8 +3,10 @@ import { BotService } from './bot.service';
 import { BotModuleOptions, BotModuleOptionsAsync } from './bot.types';
 import { PROVIDE_BOT_SYMBOL } from './bot.constants';
 import { DiscoveryModule } from '@nestjs/core';
+import { BotController } from './bot.controller';
 
 @Module({
+  controllers: [BotController],
   providers: [BotService],
 })
 export class BotModule {
