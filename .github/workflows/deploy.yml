@@ -41,7 +41,7 @@ jobs:
       - uses: actions/download-artifact@v5
         with:
           name: source
-          path: /
+          path: .
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         env:
