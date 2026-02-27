@@ -41,12 +41,12 @@ jobs:
       - uses: actions/download-artifact@v5
         with:
           name: source
-          path: dist/
+          path: /
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         env:
           SOURCE: 'dist package.json package-lock.json'
-          ARGS: "-rlgoDzvc -i --delete"
+          ARGS: '-rlgoDzvc -i --delete'
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
