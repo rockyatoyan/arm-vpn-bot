@@ -124,9 +124,9 @@ ${!user ? 'Добро пожаловать' : 'C возвращением'} в �
       `📖 <b>Инструкция по использованию VPN</b>
 
 1️⃣ <b>Установка приложения для туннелирования</b>
-- Для Android: Рекомендуем использовать <a href="https://play.google.com/store/apps/details?id=app.hiddify.com">Hiddify</a> или <a href="https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ru">v2RayTun</a>.
-- Для iOS: <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532">Hiddify</a> или <a href="https://apps.apple.com/us/app/v2raytun/id6476628951">v2RayTun</a>.
-- Для ПК: <a href="https://github.com/hiddify/hiddify-app/releases/latest/download/Hiddify-Windows-Setup-x64.exe">Hiddify</a> или <a href="https://v2raytun.com/">v2RayTun</a>.
+- Для Android: Рекомендуем использовать <a href="https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ru">v2RayTun</a> или <a href="https://play.google.com/store/apps/details?id=app.hiddify.com">Hiddify</a>.
+- Для iOS: <a href="https://apps.apple.com/us/app/v2raytun/id6476628951">v2RayTun</a> или <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532">Hiddify</a>.
+- Для ПК: <a href="https://v2raytun.com/">v2RayTun</a> или <a href="https://github.com/hiddify/hiddify-app/releases/latest/download/Hiddify-Windows-Setup-x64.exe">Hiddify</a>.
 
 2️⃣ <b>Получение ссылки на подписку</b>
 - Нажмите на кнопку "🔑 Получить доступ к VPN" в главном меню бота или под инструкцией.
