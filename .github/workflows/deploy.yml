@@ -30,7 +30,7 @@ jobs:
         with:
           name: source
           path: |
-            dist/*.js
+            dist
             package.json
             package-lock.json
 
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/download-artifact@v5
         with:
           name: source
-          path: /
+          path: ~/app
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         env:
@@ -50,7 +50,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: 'app'
+          TARGET: '~/app'
           SCRIPT_AFTER: |
             npm i --omit=dev
             pm2 restart vpn-bot
