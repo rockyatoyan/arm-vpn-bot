@@ -43,15 +43,14 @@ jobs:
           name: source
           path: dist/
       - name: Deploy
-        uses: easingthemes/ssh-deploy@v4
+        uses: easingthemes/ssh-deploy@main
         env:
           SOURCE: 'dist package.json package-lock.json'
-          ARGS: '--delete -az'
+          ARGS: "-rlgoDzvc -i --delete"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: 'app'
           SCRIPT_AFTER: |
-            cd app
             npm i --omit=dev
             pm2 restart vpn-bot
