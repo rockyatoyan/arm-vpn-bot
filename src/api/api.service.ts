@@ -31,17 +31,17 @@ export class ApiService {
         vless: {
           flow: 'xtls-rprx-vision',
         },
-        trojan: {},
+        // trojan: {},
       },
       inbounds: {
         vless: ['VLESS TCP REALITY'],
-        trojan: ['TROJAN TCP TLS'],
+        // trojan: ['TROJAN TCP TLS'],
       },
     };
 
     const { data } = await firstValueFrom(
       this.httpService
-        .post<CreateUserResponse>(this.apiUrl + '/user	', payload, {
+        .post<CreateUserResponse>(this.apiUrl + '/user', payload, {
           headers: await this.getHeaders(),
         })
         .pipe(
