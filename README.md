@@ -68,15 +68,3 @@ npm run start:dev
 # Production
 npm run start:prod
 ```
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── bot/          # Telegram update handlers & scenes
-├── vpn/          # VPN key issuance and management logic
-├── users/        # User registration and subscription tracking
-└── config/       # Environment configuration module
-```
