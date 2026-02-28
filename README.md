@@ -25,7 +25,7 @@ A production-ready Telegram bot for automated VPN access management, built with 
 | Layer        | Technology                  |
 | ------------ | --------------------------- |
 | Framework    | NestJS                      |
-| Telegram SDK | grammY (`@grammyjs/nestjs`) |
+| Telegram SDK | grammY (custom integration) |
 | CI/CD        | GitHub Actions              |
 
 ---
