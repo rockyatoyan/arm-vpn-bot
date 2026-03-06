@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "axios": "^1.13.5",
     "grammy": "^1.40.1",
+    "nestjs-yookassa": "^2.3.6",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

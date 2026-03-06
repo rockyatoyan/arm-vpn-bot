@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BotModule } from './bot/bot.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ApiModule } from './api/api.module';
 import { VpnModule } from './vpn/vpn.module';
 
 @Module({
@@ -14,7 +13,6 @@ import { VpnModule } from './vpn/vpn.module';
       }),
       inject: [ConfigService],
     }),
-    ApiModule,
     VpnModule,
   ],
 })

@@ -26,7 +26,9 @@ export class ApiService {
 
     const payload = {
       username,
-      expire: 0,
+      status: 'on_hold',
+      expire: null,
+      on_hold_expire_duration: 60 * 60 * 24 * 31,
       proxies: {
         vless: {
           flow: 'xtls-rprx-vision',
@@ -108,7 +110,6 @@ export class ApiService {
 
       return data.access_token;
     } catch (error) {
-      console.log(error);
       throw new UnauthorizedException(
         'Failed to retrieve API Admin credentials',
       );
