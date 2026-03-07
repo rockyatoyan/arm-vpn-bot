@@ -19,7 +19,7 @@ export class ApiService {
     this.apiUrl = this.configService.getOrThrow<string>('VPN_API_URL');
   }
 
-  async createUser(telegramId: number | string) {
+  async createUser(telegramId: number | string, chatId: number) {
     const username = isNaN(Number(telegramId))
       ? telegramId
       : `tg_${telegramId}`;
@@ -28,7 +28,8 @@ export class ApiService {
       username,
       status: 'on_hold',
       expire: null,
-      on_hold_expire_duration: 60 * 60 * 24 * 31,
+      on_hold_expire_duration: this.getOnHoldExpire(),
+      note: String(chatId),
       proxies: {
         vless: {
           flow: 'xtls-rprx-vision',
@@ -56,6 +57,105 @@ export class ApiService {
     );
 
     return data;
+  }
+
+  async renewUserSubscription(user: CreateUserResponse) {
+    const status = user.status;
+
+    if (status === 'active') {
+      const currentExpire = user.expire;
+
+      const date = new Date(currentExpire * 1000);
+
+      date.setMonth(date.getMonth() + 1);
+
+      const newExpire = Math.floor(date.getTime() / 1000);
+
+      const payload = {
+        expire: newExpire,
+      };
+
+      const { data } = await firstValueFrom(
+        this.httpService
+          .put<CreateUserResponse>(
+            this.apiUrl + '/user/' + user.username,
+            payload,
+            {
+              headers: await this.getHeaders(),
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              throw new BadRequestException(
+                `Failed to renew user subscription: ${error.response?.data?.message || error.message}`,
+              );
+            }),
+          ),
+      );
+
+      return data;
+    }
+
+    if (status === 'on_hold') {
+      const onHoldExpire = user.on_hold_expire_duration;
+
+      const payload = {
+        status: 'on_hold',
+        expire: null,
+        on_hold_expire_duration: onHoldExpire + this.getOnHoldExpire(),
+      };
+
+      const { data } = await firstValueFrom(
+        this.httpService
+          .put<CreateUserResponse>(
+            this.apiUrl + '/user/' + user.username,
+            payload,
+            {
+              headers: await this.getHeaders(),
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              console.log(error);
+              throw new BadRequestException(
+                `Failed to renew user subscription: ${error.response?.data?.message || error.message}`,
+              );
+            }),
+          ),
+      );
+
+      return data;
+    }
+
+    if (status === 'expired') {
+      const payload = {
+        status: 'on_hold',
+        expire: null,
+        on_hold_expire_duration: this.getOnHoldExpire(),
+      };
+
+      const { data } = await firstValueFrom(
+        this.httpService
+          .put<CreateUserResponse>(
+            this.apiUrl + '/user/' + user.username,
+            payload,
+            {
+              headers: await this.getHeaders(),
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              throw new BadRequestException(
+                `Failed to renew user subscription: ${error.response?.data?.message || error.message}`,
+              );
+            }),
+          ),
+      );
+
+      return data;
+    }
+
+    return null;
   }
 
   async getUser(telegramId: number | string) {
@@ -114,5 +214,9 @@ export class ApiService {
         'Failed to retrieve API Admin credentials',
       );
     }
+  }
+
+  private getOnHoldExpire() {
+    return 60 * 60 * 24 * 31;
   }
 }

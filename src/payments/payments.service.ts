@@ -10,6 +10,7 @@ import {
   YookassaService,
   ConfirmationEnum,
 } from 'nestjs-yookassa';
+import { UiService } from 'src/ui/ui.service';
 import { isDev } from 'src/util/is-dev.util';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class PaymentsService {
     private readonly yookassaService: YookassaService,
     private readonly botService: BotService,
     private readonly apiService: ApiService,
+    private readonly uiService: UiService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -71,40 +73,56 @@ export class PaymentsService {
 
     if (status === 'succeeded') {
       const existedUser = await this.apiService.getUser(userId);
-      if (existedUser && new Date(existedUser.expire) > new Date()) {
+
+      if (existedUser) {
+        const renewedUser =
+          await this.apiService.renewUserSubscription(existedUser);
+
+        if (!renewedUser) {
+          await this.botService.bot.api.sendMessage(
+            chatId,
+            '❌ К сожалению, произошла ошибка при продлении вашей подписки. Пожалуйста, попробуйте снова или свяжитесь с поддержкой.',
+          );
+          return true;
+        }
+
         const keyboard = new InlineKeyboard().copyText(
           '🔑 Скопировать ссылку',
-          existedUser.subscription_url,
+          renewedUser.subscription_url,
         );
-        await this.botService.bot.api.sendMessage(
-          chatId,
-          '✅ Ваш платеж успешно обработан! Доступ к VPN активирован.',
-          { reply_markup: keyboard },
-        );
+
+        const combined =
+          this.uiService.renderWebhookSuccessPaymentFromExistedUser();
+        await this.botService.bot.api.sendMessage(chatId, combined.text, {
+          reply_markup: keyboard,
+          entities: combined.entities,
+        });
 
         return true;
       }
 
-      const user = await this.apiService.createUser(userId);
+      const user = await this.apiService.createUser(userId, chatId);
 
       const subscriptionUrl = user.subscription_url;
       const keyboard = new InlineKeyboard().copyText(
         '🔑 Скопировать ссылку',
         subscriptionUrl,
       );
-      await this.botService.bot.api.sendMessage(
-        chatId,
-        '✅ Ваш платеж успешно обработан! Доступ к VPN активирован.',
-        { reply_markup: keyboard },
-      );
+      const combined = this.uiService.renderWebhookSuccessPaymentFromNewUser();
+      await this.botService.bot.api.sendMessage(chatId, combined.text, {
+        reply_markup: keyboard,
+        entities: combined.entities,
+      });
 
       return true;
     }
 
-    await this.botService.bot.api.sendMessage(
-      chatId,
-      '❌ К сожалению, произошла ошибка при обработке вашего платежа. Пожалуйста, попробуйте снова или свяжитесь с поддержкой.',
-    );
-    return true;
+    if (status === 'failed') {
+      await this.botService.bot.api.sendMessage(
+        chatId,
+        '❌ К сожалению, произошла ошибка при обработке вашего платежа. Пожалуйста, попробуйте снова или свяжитесь с поддержкой.',
+      );
+      return true;
+    }
   }
 }

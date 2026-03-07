@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { BotModule } from './bot/bot.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VpnModule } from './vpn/vpn.module';
+import { UiModule } from './ui/ui.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { VpnModule } from './vpn/vpn.module';
       inject: [ConfigService],
     }),
     VpnModule,
+    UiModule,
   ],
 })
 export class AppModule {}
