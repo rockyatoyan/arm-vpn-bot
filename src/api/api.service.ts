@@ -116,7 +116,6 @@ export class ApiService {
           )
           .pipe(
             catchError((error) => {
-              console.log(error);
               throw new BadRequestException(
                 `Failed to renew user subscription: ${error.response?.data?.message || error.message}`,
               );
@@ -176,6 +175,25 @@ export class ApiService {
       return data;
     } catch {
       return null;
+    }
+  }
+
+  async getUsers() {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get<{ users: CreateUserResponse[] }>(
+          this.apiUrl + '/users',
+          {
+            headers: await this.getHeaders(),
+          },
+        ),
+      );
+
+      return data?.users || [];
+      {
+      }
+    } catch {
+      return [];
     }
   }
 

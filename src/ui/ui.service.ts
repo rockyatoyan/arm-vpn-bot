@@ -100,6 +100,16 @@ export class UiService {
     return combined;
   }
 
+  renderExpringUsersNotification(diffDays: number) {
+    const combined = FormattedString.b(
+      `⚠️ Внимание! У вас заканчивается подписка на VPN ${diffDays === 0 ? 'сегодня' : diffDays === 1 ? 'завтра' : `в ближайшие ${diffDays} дня`}. Пожалуйста, продлите подписку, чтобы продолжить пользоваться безопасным интернетом без перерывов.\n\n`,
+    ).plain(
+      'Для продления нажмите на кнопку "🔑 Получить доступ к VPN" под сообщением или в главном меню бота и следуйте инструкциям по оплате.',
+    );
+
+    return combined;
+  }
+
   async renderGuide(ctx: Context) {
     const combined = FormattedString.b(
       `📖 <b>Инструкция по использованию VPN</b>\n\n\n`,

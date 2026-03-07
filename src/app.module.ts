@@ -3,6 +3,8 @@ import { BotModule } from './bot/bot.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VpnModule } from './vpn/vpn.module';
 import { UiModule } from './ui/ui.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -14,8 +16,10 @@ import { UiModule } from './ui/ui.module';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     VpnModule,
     UiModule,
+    SchedulerModule,
   ],
 })
 export class AppModule {}
