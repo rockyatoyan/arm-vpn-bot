@@ -12,6 +12,15 @@ export class BotService implements OnModuleInit {
 
   public bot: Bot;
 
+  private commands = [
+    {
+      command: 'start',
+      description: 'Запуск бота',
+    },
+    { command: 'menu', description: 'Главное меню' },
+    { command: 'guide', description: 'Инструкция по подключению VPN' },
+  ];
+
   constructor(
     private readonly discoveryService: DiscoveryService,
     private readonly configService: ConfigService,
@@ -24,14 +33,17 @@ export class BotService implements OnModuleInit {
   async onModuleInit() {
     this.setupDecorators();
 
-    this.bot.api.setMyCommands([
-      {
-        command: 'start',
-        description: 'Запуск бота',
-      },
-      { command: 'menu', description: 'Главное меню' },
-      { command: 'guide', description: 'Инструкция по подключению VPN' },
-    ]);
+    const commands = await this.bot.api.getMyCommands();
+    if (
+      !commands?.length ||
+      JSON.stringify(commands) !== JSON.stringify(this.commands)
+    ) {
+      await this.bot.api.setMyCommands(this.commands);
+    }
+
+    const { description } = await this.bot.api.getMyDescription();
+    if (!description || description !== this.getDescriptionString())
+      await this.bot.api.setMyDescription(this.getDescriptionString());
 
     this.bot.catch(async (err) => {
       await err.ctx.answerCallbackQuery();
@@ -126,5 +138,19 @@ export class BotService implements OnModuleInit {
   private isRestrictedProperty(name: string): boolean {
     const restrictedProperties = ['caller', 'callee', 'arguments'];
     return restrictedProperties.includes(name);
+  }
+
+  private getDescriptionString() {
+    return (
+      '🔥 Доступ к миру без границ 🔓\n\n' +
+      '🚀 Высокая скорость – без лагов и ограничений\n' +
+      '⚡️ Современный протокол – быстрый, надежный, безопасный\n' +
+      '💬 Поддержка 24/7 – решение в течение 1 минуты\n' +
+      '💰 Всего 99₽ в месяц – низкая цена за отличное качество\n' +
+      '⏳ Пробный период – первые 7 дней бесплатно!\n' +
+      '👥 Реферальная система – зовите друзей и получайте VPN бесплатно!\n\n' +
+      '⭐ Уже 1500+ пользователей выбрали нас!\n\n' +
+      '📲 Наслаждайтесь свободным интернетом!'
+    );
   }
 }
