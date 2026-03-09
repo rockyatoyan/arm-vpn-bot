@@ -15,6 +15,7 @@ export class UiService {
     const combined = FormattedString.b(
       `Привет, ${ctx.from?.first_name}! 👋\n\n`,
     )
+      .plain('Добро пожаловать в наш VPN-сервис!\n\n')
       .plain(
         'Здесь вы можете получить доступ к безопасному и быстрому интернету, а также управлять своим аккаунтом.\n\n',
       )
