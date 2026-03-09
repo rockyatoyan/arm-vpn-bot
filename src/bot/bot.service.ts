@@ -45,6 +45,15 @@ export class BotService implements OnModuleInit {
     if (!description || description !== this.getDescriptionString())
       await this.bot.api.setMyDescription(this.getDescriptionString());
 
+    const { short_description } = await this.bot.api.getMyShortDescription();
+    if (
+      !short_description ||
+      short_description !== this.getShortDescriptionString()
+    )
+      await this.bot.api.setMyShortDescription(
+        this.getShortDescriptionString(),
+      );
+
     this.bot.catch(async (err) => {
       await err.ctx.answerCallbackQuery();
       await err.ctx.reply(
@@ -151,6 +160,14 @@ export class BotService implements OnModuleInit {
       '👥 Реферальная система – зовите друзей и получайте VPN бесплатно!\n\n' +
       '⭐ Уже 1500+ пользователей выбрали нас!\n\n' +
       '📲 Наслаждайтесь свободным интернетом!'
+    );
+  }
+
+  private getShortDescriptionString() {
+    return (
+      '🔥 VPN с высокой скоростью и поддержкой 24/7 🔓\n\n' +
+      '💰 Всего 99₽/мес, первые 7 дней бесплатно!\n' +
+      '⭐ Уже 1500+ пользователей.\n\n'
     );
   }
 }
