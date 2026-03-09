@@ -108,7 +108,6 @@ export class ApiService {
 
       return data.access_token;
     } catch (error) {
-      console.log(error);
       throw new UnauthorizedException(
         'Failed to retrieve API Admin credentials',
       );
