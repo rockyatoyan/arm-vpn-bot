@@ -43,10 +43,27 @@ export class VpnService {
     }
 
     const existedUser = await this.apiService.getUser(userId);
-    if (existedUser && new Date(existedUser.expire) > new Date()) {
+    if (
+      existedUser &&
+      (existedUser.status === 'active' || existedUser.status === 'on_hold')
+    ) {
       const subscriptionUrl = existedUser.subscription_url;
 
       return await this.uiService.renderSubscriptionLink(ctx, subscriptionUrl);
+    }
+
+    if (!existedUser) {
+      const newUser = await this.apiService.createUser(
+        userId,
+        ctx.chat?.id || -1,
+        true,
+      );
+
+      await ctx.answerCallbackQuery();
+      return await this.uiService.renderStartFreeTrial(
+        ctx,
+        newUser.subscription_url,
+      );
     }
 
     const newPayment = await this.paymentsService.createPayment(

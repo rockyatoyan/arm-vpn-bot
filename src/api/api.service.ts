@@ -19,7 +19,11 @@ export class ApiService {
     this.apiUrl = this.configService.getOrThrow<string>('VPN_API_URL');
   }
 
-  async createUser(telegramId: number | string, chatId: number) {
+  async createUser(
+    telegramId: number | string,
+    chatId: number,
+    isFreeTrial = false,
+  ) {
     const username = isNaN(Number(telegramId))
       ? telegramId
       : `tg_${telegramId}`;
@@ -28,7 +32,9 @@ export class ApiService {
       username,
       status: 'on_hold',
       expire: null,
-      on_hold_expire_duration: this.getOnHoldExpire(),
+      on_hold_expire_duration: isFreeTrial
+        ? this.getFreeTrialExpire()
+        : this.getOnHoldExpire(),
       note: String(chatId),
       proxies: {
         vless: {
@@ -236,5 +242,9 @@ export class ApiService {
 
   private getOnHoldExpire() {
     return 60 * 60 * 24 * 31;
+  }
+
+  private getFreeTrialExpire() {
+    return 60 * 60 * 24 * 7;
   }
 }

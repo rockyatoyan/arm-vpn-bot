@@ -87,6 +87,23 @@ export class UiService {
     return combined;
   }
 
+  renderStartFreeTrial(ctx: Context, url: string) {
+    const keyboard = new InlineKeyboard().copyText(
+      '🔑 Скопировать ссылку',
+      url,
+    );
+    const combined = FormattedString.b(
+      '🎉 Поздравляем! Вы успешно активировали бесплатный пробный период на 7 дней. Теперь у вас есть полный доступ к нашему VPN-сервису, и вы можете наслаждаться безопасным и быстрым интернетом без ограничений!\n\n',
+    ).plain(
+      'Нажмите на кнопку ниже для копирования настроек и в скачанном приложение выберите опцию "Импортировать из буфера обмена" или аналогичную опцию.',
+    );
+
+    return ctx.reply(combined.text, {
+      reply_markup: keyboard,
+      entities: combined.entities,
+    });
+  }
+
   renderWebhookSuccessPaymentFromExistedUser() {
     const combined = FormattedString.b(
       '✅ Ваш платеж успешно обработан! Подписка продлена на месяц. Доступ к VPN активирован.\n\n',
